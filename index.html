@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Liquidity Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121214;
+            color: #e1e1e6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #1a1a1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #00b4d8;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #a9a9b3;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #29292e;
+            background-color: #202024;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00b4d8;
+            border: none;
+            border-radius: 6px;
+            color: #121214;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #90e0ef;
+        }
+        .result-section {
+            margin-top: 25px;
+            display: none;
+        }
+        .zone-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .zone-table th, .zone-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #29292e;
+        }
+        .buy-row { background-color: rgba(0, 180, 216, 0.1); color: #00b4d8; font-weight: bold; }
+        .sell-row { background-color: rgba(230, 57, 70, 0.1); color: #e63946; font-weight: bold; }
+        .range-info { text-align: center; font-size: 14px; color: #8d8d99; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Liquidity Level Calc</h2>
+    
+    <div class="input-group">
+        <label for="high">High (Максимал) narx:</label>
+        <input type="number" id="high" step="any" placeholder="Masalan: 4351.628">
+    </div>
+    
+    <div class="input-group">
+        <label for="low">Low (Минимал) narx:</label>
+        <input type="number" id="low" step="any" placeholder="Masalan: 4321.090">
+    </div>
+    
+    <button onclick="calculateZones()">Zonalarni Hisoblash</button>
+    
+    <div class="result-section" id="results">
+        <div class="range-info" id="range-text"></div>
+        <table class="zone-table">
+            <thead>
+                <tr>
+                    <th>Zona</th>
+                    <th>Foiz</th>
+                    <th>Kalit Narx</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="sell-row">
+                    <td>Сел зона</td>
+                    <td>90%</td>
+                    <td id="sell90">-</td>
+                </tr>
+                <tr class="sell-row">
+                    <td>Сел зона</td>
+                    <td>70%</td>
+                    <td id="sell70">-</td>
+                </tr>
+                <tr class="buy-row">
+                    <td>Бай зона</td>
+                    <td>70%</td>
+                    <td id="buy70">-</td>
+                </tr>
+                <tr class="buy-row">
+                    <td>Бай зона</td>
+                    <td>90%</td>
+                    <td id="buy90">-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function calculateZones() {
+    const high = parseFloat(document.getElementById('high').value);
+    const low = parseFloat(document.getElementById('low').value);
+    
+    if (isNaN(high) || !high || isNaN(low) || !low) {
+        alert("Iltimos, High va Low narxlarini to'g'ri kiriting!");
+        return;
+    }
+    
+    const range = high - low;
+    
+    // Algoritm bo'yicha hisob-kitob (Multiplikatorlar: 0.3846 va 0.7692)
+    const b70 = low - (range * 0.3846);
+    const b90 = low - (range * 0.7692);
+    const s70 = high + (range * 0.3846);
+    const s90 = high + (range * 0.7692);
+    
+    // Natijalarni ekranga chiqarish (to'rtta kasr aniqligida)
+    document.getElementById('range-text').innerText = `Joriy diapazon (Range): ${range.toFixed(3)} punkt`;
+    document.getElementById('buy70').innerText = b70.toFixed(3);
+    document.getElementById('buy90').innerText = b90.toFixed(3);
+    document.getElementById('sell70').innerText = s70.toFixed(3);
+    document.getElementById('sell90').innerText = s90.toFixed(3);
+    
+    document.getElementById('results').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
