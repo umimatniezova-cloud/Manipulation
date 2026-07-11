@@ -2,35 +2,33 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ozod Trader Pro V3 Dev</title>
-    <!-- Firebase kutubxonalari -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     
     <style>
-        body { background: #121212; color: #fff; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; text-align: center; }
-        .container { width: 100%; max-width: 350px; background: #1a1a1a; padding: 20px; border-radius: 20px; border: 1px solid #333; }
+        body { background: #121212; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .container { width: 100%; max-width: 350px; background: #1a1a1a; padding: 20px; border-radius: 20px; border: 1px solid #333; text-align: center; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; background: #222; color: white; box-sizing: border-box; }
         button { width: 100%; padding: 10px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; background: #eab308; }
         .btn-group { display: flex; gap: 5px; }
-        .buy-btn { background: #22c55e !important; color: white; }
-        .sell-btn { background: #ef4444 !important; color: white; }
         .hidden { display: none; }
-        .user-item { background: #222; padding: 10px; margin-top: 5px; border-radius: 10px; font-size: 0.8rem; text-align: left; }
+        .user-item { background: #222; padding: 10px; margin-top: 8px; border-radius: 10px; font-size: 0.8rem; text-align: left; }
         #result { margin-top: 15px; padding: 15px; border-radius: 15px; background: #222; border: 1px solid #444; line-height: 1.6; text-align: left; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
 <div class="container" id="mainBox">
-    <div style="color:#eab308; font-weight:bold;">Ozod Trader Pro V3 Dev</div>
+    <div style="color:#eab308; font-weight:bold; margin-bottom:15px;">Ozod Trader Pro V3 Dev</div>
     
     <div id="loginBox">
         <input type="text" id="regUser" placeholder="Username">
         <input type="password" id="regPass" placeholder="Password">
         <button onclick="register()">REGISTRATSIYA</button>
         <button onclick="login()" style="background:#555">KIRISH</button>
-        <div style="font-size:0.7rem; margin-top:10px; cursor:pointer;" onclick="openAdmin()">Ozod</div>
+        <div style="font-size:0.7rem; margin-top:10px; cursor:pointer;" onclick="openAdmin()">Admin Panel</div>
     </div>
 
     <div id="appBox" class="hidden">
@@ -42,8 +40,8 @@
             <input type="number" id="high" placeholder="HIGH" step="0.001">
             <input type="number" id="low" placeholder="LOW" step="0.001">
             <div class="btn-group">
-                <button class="buy-btn" onclick="calc('buy')">BUY</button>
-                <button class="sell-btn" onclick="calc('sell')">SELL</button>
+                <button style="background:#22c55e" onclick="calc('buy')">BUY</button>
+                <button style="background:#ef4444" onclick="calc('sell')">SELL</button>
             </div>
             <div id="result" class="hidden"></div>
         </div>
@@ -54,17 +52,16 @@
     </div>
 
     <div id="adminBox" class="hidden">
-        <input type="password" id="adminCode" placeholder="Kod">
+        <input type="password" id="adminCode" placeholder="Admin kodini kiritin">
         <button onclick="checkAdmin()">KIRISH</button>
         <div id="adminContent" class="hidden">
-            <div id="userList"></div>
-            <button onclick="location.reload()" style="background:#555">ORQAGA</button>
+            <div id="userList" style="margin-top:10px;"></div>
+            <button onclick="location.reload()" style="background:#555; margin-top:10px;">ORQAGA</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Firebase konfiguratsiyasi
     const firebaseConfig = {
         apiKey: "AIzaSyA2rwDpz01VBXcpjakkRXgVDKYBmpL8BNE",
         authDomain: "ozod-fea55.firebaseapp.com",
@@ -79,10 +76,7 @@
     const db = firebase.database();
     let users = {};
 
-    // Bazadan foydalanuvchilarni yuklab olish
-    db.ref('users').on('value', (snapshot) => {
-        users = snapshot.val() || {};
-    });
+    db.ref('users').on('value', (snapshot) => { users = snapshot.val() || {}; });
 
     function register() {
         let u = document.getElementById('regUser').value;
@@ -117,14 +111,27 @@
         let res = document.getElementById('result');
         res.classList.remove('hidden');
         if (type === 'buy') {
-            res.innerHTML = `<b>BUY ZONE</b><br>Entry: ${(l + punkt * (9/11)).toFixed(2)} - ${(l + punkt * (10/11)).toFixed(2)}<br>Dalivka: ${(l + punkt * (17/19)).toFixed(2)} - ${(l + punkt * (18/19)).toFixed(2)}<br>SL: ${(l - punkt*0.1).toFixed(2)}<br>TP: ${(h + punkt*0.5).toFixed(2)}`;
+            res.innerHTML = `<b>BUY ZONE</b><br>
+            Entry: ${(l + punkt * (9/11)).toFixed(3)} - ${(l + punkt * (10/11)).toFixed(3)}<br>
+            SL: ${(l - punkt * 0.1).toFixed(3)}<br>
+            TP: ${(h + punkt * 0.5).toFixed(3)}`;
         } else {
-            res.innerHTML = `<b>SELL ZONE</b><br>Entry: ${(h - punkt * (9/11)).toFixed(2)} - ${(h - punkt * (10/11)).toFixed(2)}<br>Dalivka: ${(h - punkt * (17/19)).toFixed(2)} - ${(h - punkt * (18/19)).toFixed(2)}<br>SL: ${(h + punkt*0.1).toFixed(2)}<br>TP: ${(l - punkt*0.5).toFixed(2)}`;
+            res.innerHTML = `<b>SELL ZONE</b><br>
+            Entry: ${(h - punkt * (9/11)).toFixed(3)} - ${(h - punkt * (10/11)).toFixed(3)}<br>
+            SL: ${(h + punkt * 0.1).toFixed(3)}<br>
+            TP: ${(l - punkt * 0.5).toFixed(3)}`;
         }
     }
 
     function openAdmin() { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('adminBox').classList.remove('hidden'); }
-    function checkAdmin() { if(document.getElementById('adminCode').value === "888888343") { document.getElementById('adminContent').classList.remove('hidden'); renderUsers(); } else alert("Xato!"); }
+    function checkAdmin() {
+        if(document.getElementById('adminCode').value === "888888343") {
+            document.getElementById('adminContent').classList.remove('hidden');
+            document.getElementById('adminCode').classList.add('hidden');
+            document.querySelector('#adminBox > button').classList.add('hidden');
+            renderUsers();
+        } else alert("Kod xato!");
+    }
     
     function renderUsers() {
         let list = document.getElementById('userList');
@@ -132,14 +139,11 @@
         for(let u in users) {
             list.innerHTML += `<div class="user-item">
                 <b>${u}</b><br>Oxirgi kirish: ${users[u].lastLogin}<br>
-                <button onclick="togglePremium('${u}')">${users[u].premium ? 'Premiumni O\'chirish' : 'Premium Berish'}</button>
-                <button onclick="deleteUser('${u}')" style="background:#ef4444">O'chirish</button>
+                <button onclick="db.ref('users/${u}/premium').set(!users['${u}'].premium)">${users[u].premium ? 'Premium O\'chirish' : 'Premium Berish'}</button>
+                <button onclick="db.ref('users/${u}').remove()" style="background:#ef4444">O'chirish</button>
             </div>`;
         }
     }
-
-    function togglePremium(u) { db.ref('users/' + u + '/premium').set(!users[u].premium); }
-    function deleteUser(u) { db.ref('users/' + u).remove(); }
 </script>
 </body>
 </html>
